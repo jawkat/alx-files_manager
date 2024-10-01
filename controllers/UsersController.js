@@ -2,10 +2,6 @@
 import sha1 from 'sha1';
 import dbClient from '../utils/db';
 
-const RedisClient = require('../utils/redis');
-
-const { ObjectId } = require('mongodb');
-
 class UsersController {
   // Endpoint pour POST /users: Créer un nouvel utilisateur
   static async postNew(req, res) {
@@ -33,7 +29,7 @@ class UsersController {
     // Créer le nouvel utilisateur
     const result = await dbClient.db.collection('users').insertOne({
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     // Répondre avec l'ID et l'email de l'utilisateur
