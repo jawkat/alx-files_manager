@@ -10,7 +10,7 @@ class AuthController {
 
     // Check if Authorization header exists and is Basic Auth
     if (!authHeader || !authHeader.startsWith('Basic ')) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).send({ error: 'Unauthorized' });
     }
 
     // Decode Base64 credentials
@@ -20,7 +20,7 @@ class AuthController {
 
     // Ensure both email and password are provided
     if (!email || !password) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).send({ error: 'Unauthorized' });
     }
 
     // Hash the password and attempt to find the user in the database
@@ -29,7 +29,7 @@ class AuthController {
 
     // If user is not found, return Unauthorized
     if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).send({ error: 'Unauthorized' });
     }
 
     // Generate a new token
@@ -39,7 +39,7 @@ class AuthController {
     await redisClient.set(`auth_${token}`, user._id.toString(), 'EX', 86400);
 
     // Return the token to the user
-    return res.status(200).json({ token });
+    return res.status(200).send({ token });
   }
 
   // Method to sign out a user by removing their token
@@ -48,13 +48,13 @@ class AuthController {
 
     // Check if the token is provided in the header
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).send({ error: 'Unauthorized' });
     }
 
     // Check if the token exists in Redis
     const userId = await redisClient.get(`auth_${token}`);
     if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).send({ error: 'Unauthorized' });
     }
 
     // Remove the token from Redis
