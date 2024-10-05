@@ -9,18 +9,18 @@ class UsersController {
 
     // Vérifier si l'email est fourni
     if (!email) {
-      return res.status(400).send({ error: 'Missing email' });
+      return res.status(400).json({ error: 'Missing email' });
     }
 
     // Vérifier si le mot de passe est fourni
     if (!password) {
-      return res.status(400).send({ error: 'Missing password' });
+      return res.status(400).json({ error: 'Missing password' });
     }
 
     // Vérifier si l'email existe déjà dans la base de données
     const userExists = await dbClient.db.collection('users').findOne({ email });
     if (userExists) {
-      return res.status(400).send({ error: 'Already exist' });
+      return res.status(400).json({ error: 'Already exist' });
     }
 
     // Hasher le mot de passe avec SHA1
@@ -33,27 +33,27 @@ class UsersController {
     });
 
     // Répondre avec l'ID et l'email de l'utilisateur
-    return res.status(201).send({ id: result.insertedId, email });
+    return res.status(201).json({ id: result.insertedId, email });
   }
 
   // Endpoint pour GET /users/me: Récupérer l'utilisateur connecté
   static async getMe(req, res) {
     const token = req.header('X-Token');
     if (!token) {
-      return res.status(401).send({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const userId = await redisClient.get(`auth_${token}`);
     if (!userId) {
-      return res.status(401).send({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const user = await dbClient.db.collection('users').findOne({ _id: dbClient.getObjectId(userId) });
     if (!user) {
-      return res.status(401).send({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    return res.status(200).send({ id: user._id.toString(), email: user.email });
+    return res.status(200).json({ id: user._id.toString(), email: user.email });
   }
 }
 
