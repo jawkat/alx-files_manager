@@ -4,10 +4,11 @@ const dbClient = require('../utils/db'); // Utilitaire pour MongoDB
 
 class AppController {
   // Endpoint pour /status: Vérifie si Redis et la DB sont vivants
-  static async getStatus(req, res) {
-    const redisStatus = redisClient.isAlive(); // Vérifier si Redis est actif
-    const dbStatus = dbClient.isAlive(); // Vérifier si la base de données est active
-    res.status(200).json({ redis: redisStatus, db: dbStatus });
+  static getStatus(req, res) {
+    res.status(200).json({
+      redis: redisClient.isAlive(),
+      db: dbClient.isAlive(),
+    });
   }
 
   // Endpoint pour /stats: Retourne le nombre d'utilisateurs et de fichiers
